@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 const renderSingleDay = (data) => {
     const { day } = data;
     return(
-        <div class="column" key={data.date}>
+        <div className="column" key={data.date}>
             <div className="ui segment center aligned">
                 <h5 className="ui secondary segment"><Moment local format="DD/MM/YYYY">{data.date}</Moment></h5>
                 <img className="ui centered tiny image" src={day.condition.icon} />

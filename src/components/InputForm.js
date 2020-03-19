@@ -75,7 +75,7 @@ class InputForm extends React.Component {
                             <div className="field">
                                 <div ref={this.setWrapperRef} className="ui search">
                                     <form className="ui icon input" onSubmit={this.onSubmit} autoComplete="off">
-                                        <input className="" type="text" name="query" placeholder="Search..." onChange={this.handleChange} />
+                                        <input className="" type="text" name="query" placeholder="Search..." onChange={this.handleChange} value={this.state.query}/>
                                         <button className="ui primary button" type="submit"><i className="search icon"></i></button>
                                     </form>
                                     {this.state.displayList && this.renderList()}
