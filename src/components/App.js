@@ -1,60 +1,65 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import InputForm from './InputForm'
 import WeatherContent from './WeatherContent'
 import ForecastContent from './ForecastContent'
 import LocationContent from './LocationContent'
 import Spinner from './Spinner'
-import { connect } from 'react-redux'
 import { fetchLocation, geolocationError } from '../actions'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-class App extends React.Component{
+import  CacheManager from '../cache'
 
-    componentDidMount(){
-        window.navigator.geolocation.getCurrentPosition(
-            position =>  this.props.fetchLocation(`${position.coords.latitude},${position.coords.longitude}`),
-            err => this.props.geolocationError(err.message)
-          );  
-    }
+const cache  = new CacheManager;
 
-    renderContent({errorMessage, data}){
-        if (!errorMessage && data) {
-            return(
-                <div className="ui container">
-                    <InputForm />
-                    <LocationContent />
-                    <Tabs>
-                        <TabList>
-                            <Tab>Today</Tab>
-                            <Tab>This week</Tab>
-                        </TabList>
-                        <TabPanel>
-                            <WeatherContent />
-                        </TabPanel>
-                        <TabPanel>
-                            <ForecastContent />
-                        </TabPanel>
-                    </Tabs>
-                </div>
-            )
-        }
-        if (errorMessage && !data) {
-            return (
-                <div class="ui center aligned segment inverted red">
-                    Error: {errorMessage}
-                </div>
-            )            
-        }
-        return <Spinner message="Please accept location request" />;
-    }
-    render(){
+const renderContent = (errorMessage, data) => {
+    if (!errorMessage && data) {
         return(
-            <div className="border red">{this.renderContent(this.props.location)}</div> 
-        );
+            <div className="ui container">
+                <InputForm />
+                <LocationContent />
+                <Tabs>
+                    <TabList>
+                        <Tab>Today</Tab>
+                        <Tab>This week</Tab>
+                    </TabList>
+                    <TabPanel>
+                        <WeatherContent />
+                    </TabPanel>
+                    <TabPanel>
+                        <ForecastContent />
+                    </TabPanel>
+                </Tabs>
+            </div>
+        )
     }
+    if (errorMessage && !data) {
+        return (
+            <div class="ui center aligned segment inverted red">
+                Error: {errorMessage}
+            </div>
+        )            
+    }
+    return <Spinner message="Please accept location request" />;
+}
+
+const App = (props) => {
+  //  cache.clear();
+    useEffect(() => {
+        window.navigator.geolocation.getCurrentPosition(
+          position => props.fetchLocation(`${position.coords.latitude},${position.coords.longitude}`),
+          err => props.geolocationError(err.message)
+        );
+      }, []);
+    return(
+        <div className="border red">{renderContent(props.errorMessage, props.location)}</div> 
+    );
 }
 
 const mapStateToProps = state => {
-    return { location: state.toJS().weather }
+    return {
+         location: state.getIn(['weather', 'data', 'location']),
+         errorMessage: state.getIn(['weather', 'errorMessage']) 
+    }
 }
 
 export default connect(mapStateToProps, {fetchLocation, geolocationError})(App)

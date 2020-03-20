@@ -1,5 +1,5 @@
 import weatherApi from '../apis/weatherApi'
-import { FETCH_WEATHER, GEOLOCATION_ERROR, DISPLAY_SEARCH } from '../constants'
+import { FETCH_WEATHER, GEOLOCATION_ERROR, DISPLAY_SEARCH, SAVE_HISTORY } from '../constants'
 
 const API_KEY = 'b18e7173ce31454e8d280457201803';
 
@@ -15,6 +15,10 @@ export const displaySearch = query => {
         const response = await weatherApi.get(`/search.json?key=${API_KEY}&q=${query}`);
         dispach({type: DISPLAY_SEARCH, payload: response.data})
     }
+}
+
+export const saveHistory = data => {
+    return { type: SAVE_HISTORY, payload: {name: data}}
 }
 
 export const geolocationError = error => {
