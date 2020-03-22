@@ -9,7 +9,7 @@
             margin-top: 2rem;
             .column{
                 .field{
-                    max-width: 50%;
+                    max-width: 90%;
                     .ui{
                         &.input{
                             width: 100%;
@@ -67,4 +67,8 @@
 
         }
     }
+}
+
+.cursor--pointer{
+    cursor: pointer;
 }

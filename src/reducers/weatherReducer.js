@@ -24,19 +24,19 @@ export default (state = initialState, action) => {
             return state.setIn(['searchList'], fromJS(action.payload))
 
         case SAVE_HISTORY:
-            localforage.getItem('history').then(function(oldData) {
-                const newState = state.mergeIn(['history'], fromJS(action.payload))
+            cache.readData('history').then(function(oldData) {
                 const newData = action.payload;
                 if( oldData === null ){
-                    oldData = []
+                    oldData = [];
                 }
-                cache.writeData('history', [...oldData, newData]) 
-                return newState  
-                }).catch(function(err) {
-                    console.log(err);
-                });                    
-           
-            
+                if(oldData.length >= 5){
+                    oldData.shift();
+                }
+                if(!oldData.some(data => data.name === newData.name)){
+                    cache.writeData('history', [...oldData, newData]) 
+                }
+                return state.mergeIn(['history'], fromJS(action.payload))  
+                })                   
         default:
             return state
     }

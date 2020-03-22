@@ -3,10 +3,8 @@ import { connect } from 'react-redux'
 import {createSelector} from 'reselect';
 import CacheManager from '../cache'
 import { fetchLocation, displaySearch, saveHistory } from '../actions'
-import localforage from 'localforage'
 
 const cache = new CacheManager();
-
 const getData = (state) => state.getIn(['weather', 'searchList']);
 
 export const getStates = createSelector(
@@ -16,29 +14,11 @@ export const getStates = createSelector(
     }
  )
 
- const renderHistory  = () => {
-     let data; 
-    localforage.getItem('history').then(function (value) {
-        data = value;
-        return (
-            <div>
-                <ul> 
-                    {value.map(l => (
-                        <li>{console.log(l)}{l.name}</li>
-                    ))}
-                </ul>
-            </div>
-        )
-    }).catch(function(err) {
-        console.error(err);
-    });
-    console.log(data)
-}
-
 
 const InputForm = (props) =>  {
     const [query, setQuery] = useState('');
     const [displayList, setDisplayList] = useState(false);
+    const [history, setHistory] = useState([]);
     const node = useRef();
 
    const onSubmit = (e) => {
@@ -70,12 +50,13 @@ const InputForm = (props) =>  {
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
+        renderHistory();
         return() => {
         document.removeEventListener('mousedown', handleClickOutside);
         }
     }, []
     )
-    
+   
     const renderList = (props) => {
         return(
             <div className="location-list">
@@ -93,7 +74,27 @@ const InputForm = (props) =>  {
         )
     }
     
-   
+    const renderHistory  = async () => {
+        let data; 
+        data = await cache.readData('history');
+        if(data !== null){
+            setHistory(
+                <div className="ui segments">
+                    {
+                         data.reverse().map(location => (
+                            <div className="ui segment cursor--pointer" onClick={() => onClickList(location.name)} key={location.name}>{location.name}</div>
+                        )) 
+                    }
+                </div>    
+            )
+        }
+        else{
+            setHistory(
+                <p>No history yet!</p>
+            )  
+        }
+    }
+
     return(
         <div className="ui placeholder segment">
             <div className="ui two column stackable center aligned grid">
@@ -114,9 +115,9 @@ const InputForm = (props) =>  {
 
                     <div className="column">
                         <div className="ui icon header"><i className="world icon"></i>Browse history</div>
-                        <div className="field">
-                            {renderHistory()}
-                        </div>
+                            <div className="field">
+                                {history}
+                            </div>
                     </div>
 
                 </div>
