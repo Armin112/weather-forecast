@@ -25,7 +25,8 @@ export const saveHistory = query => {
     return async(dispach) => {
         let oldData = await cache.readData('history');
         let allData = oldData;
-        const newData = {name: query}
+        const date = new Date().getTime();
+        const newData = {name: query, date: date}
             if( oldData === null ){
                 oldData = [];
             }

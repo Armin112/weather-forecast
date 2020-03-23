@@ -69,6 +69,10 @@
     }
 }
 
-.cursor--pointer{
+.ui.segments .segment.cursor--pointer{
+    padding: .75rem;
     cursor: pointer;
+    p{
+        margin-bottom: .2rem;
+    }
 }

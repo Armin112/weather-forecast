@@ -1,9 +1,5 @@
 import { FETCH_WEATHER, GEOLOCATION_ERROR, DISPLAY_SEARCH, SAVE_HISTORY } from '../constants'
 import { fromJS, Map, List } from 'immutable';
-import CacheManager from '../cache'
-import localforage from 'localforage'
-
-const cache = new CacheManager()
 
 const initialState= Map({
     errorMessage: '',

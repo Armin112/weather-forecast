@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import {createSelector} from 'reselect';
-import CacheManager from '../cache'
 import { fetchLocation, displaySearch, saveHistory } from '../actions'
-
-const cache = new CacheManager();
+import Moment from 'react-moment';
 const getData = (state) => state.getIn(['weather', 'searchList']);
 const getHistory = (state) => state.getIn(['weather', 'history']);
 
@@ -21,7 +19,6 @@ export const getStates = createSelector(
       return history
     }
  )
-
 
 const InputForm = (props) =>  {
     const [query, setQuery] = useState('');
@@ -85,7 +82,11 @@ const InputForm = (props) =>  {
             return(
                 <div className="ui segments">
                     {history.reverse().map(location => (
-                        <div className="ui segment cursor--pointer" onClick={() => onClickList(location.get('name'))} key={location.get('name')}>{location.get('name')}</div>
+                        <div className="ui segment cursor--pointer" onClick={() => onClickList(location.get('name'))} key={location.get('name')}>
+                            <p>{location.get('name')}</p>
+                                <p className="ui label"><i className="clock icon"></i>
+                                <Moment local format="DD/MM/YYYY h:mm a">{location.get('date')}</Moment></p>
+                        </div>
                     ))}
                 </div>
             )
@@ -119,7 +120,6 @@ const InputForm = (props) =>  {
                                 {renderHistory(props.history)}
                             </div>
                     </div>
-
                 </div>
             </div>
         </div>
