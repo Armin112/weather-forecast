@@ -6,7 +6,7 @@ import WeatherContent from './WeatherContent'
 import ForecastContent from './ForecastContent'
 import LocationContent from './LocationContent'
 import Spinner from './Spinner'
-import { fetchLocation, geolocationError } from '../actions'
+import { fetchLocation, geolocationError, saveHistory } from '../actions'
 import  CacheManager from '../cache'
 
 const cache  = new CacheManager;
@@ -49,6 +49,7 @@ const App = (props) => {
           position => props.fetchLocation(`${position.coords.latitude},${position.coords.longitude}`),
           err => props.geolocationError(err.message)
         );
+        props.saveHistory();
       }, []);
     return(
         <div className="border red">{renderContent(props.errorMessage, props.location)}</div> 
@@ -62,4 +63,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, {fetchLocation, geolocationError})(App)
+export default connect(mapStateToProps, {fetchLocation, geolocationError, saveHistory})(App)

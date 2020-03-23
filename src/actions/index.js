@@ -1,7 +1,10 @@
 import weatherApi from '../apis/weatherApi'
 import { FETCH_WEATHER, GEOLOCATION_ERROR, DISPLAY_SEARCH, SAVE_HISTORY } from '../constants'
+import CacheManager from '../cache'
 
 const API_KEY = 'b18e7173ce31454e8d280457201803';
+
+const cache = new CacheManager()
 
 export const fetchLocation = query  => {
     return async(dispach) => {
@@ -17,8 +20,24 @@ export const displaySearch = query => {
     }
 }
 
-export const saveHistory = data => {
-    return { type: SAVE_HISTORY, payload: {name: data}}
+
+export const saveHistory = query => {
+    return async(dispach) => {
+        let oldData = await cache.readData('history');
+        let allData = oldData;
+        const newData = {name: query}
+            if( oldData === null ){
+                oldData = [];
+            }
+            if(oldData.length >= 5){
+                oldData.shift();
+            }
+            if(!oldData.some(data => data.name === query) && query !== undefined){
+                allData =  [...oldData, newData];
+                cache.writeData('history', allData) 
+            }
+        dispach({type: SAVE_HISTORY, payload: allData})
+    }
 }
 
 export const geolocationError = error => {

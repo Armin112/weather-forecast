@@ -6,6 +6,7 @@ import { fetchLocation, displaySearch, saveHistory } from '../actions'
 
 const cache = new CacheManager();
 const getData = (state) => state.getIn(['weather', 'searchList']);
+const getHistory = (state) => state.getIn(['weather', 'history']);
 
 export const getStates = createSelector(
     getData,
@@ -14,11 +15,17 @@ export const getStates = createSelector(
     }
  )
 
+ export const getStatesHistory = createSelector(
+    getHistory,
+    (history) => {
+      return history
+    }
+ )
+
 
 const InputForm = (props) =>  {
     const [query, setQuery] = useState('');
     const [displayList, setDisplayList] = useState(false);
-    const [history, setHistory] = useState([]);
     const node = useRef();
 
    const onSubmit = (e) => {
@@ -50,7 +57,6 @@ const InputForm = (props) =>  {
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
-        renderHistory();
         return() => {
         document.removeEventListener('mousedown', handleClickOutside);
         }
@@ -74,25 +80,19 @@ const InputForm = (props) =>  {
         )
     }
     
-    const renderHistory  = async () => {
-        let data; 
-        data = await cache.readData('history');
-        if(data !== null){
-            setHistory(
+    const renderHistory = (history) => {
+        if(history !== null ){
+            return(
                 <div className="ui segments">
-                    {
-                         data.reverse().map(location => (
-                            <div className="ui segment cursor--pointer" onClick={() => onClickList(location.name)} key={location.name}>{location.name}</div>
-                        )) 
-                    }
-                </div>    
+                    {history.reverse().map(location => (
+                        <div className="ui segment cursor--pointer" onClick={() => onClickList(location.get('name'))} key={location.get('name')}>{location.get('name')}</div>
+                    ))}
+                </div>
             )
         }
-        else{
-            setHistory(
-                <p>No history yet!</p>
-            )  
-        }
+        return(
+            <p>No history yet!</p>
+        )
     }
 
     return(
@@ -116,7 +116,7 @@ const InputForm = (props) =>  {
                     <div className="column">
                         <div className="ui icon header"><i className="world icon"></i>Browse history</div>
                             <div className="field">
-                                {history}
+                                {renderHistory(props.history)}
                             </div>
                     </div>
 
@@ -127,7 +127,7 @@ const InputForm = (props) =>  {
     }
 
 const mapStateToProps = state => {
-    return { list: getStates(state) }
+    return { list: getStates(state), history: getStatesHistory(state) }
 }
 
 export default connect(mapStateToProps, {fetchLocation, displaySearch, saveHistory})(InputForm)
