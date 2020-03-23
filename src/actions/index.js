@@ -29,10 +29,10 @@ export const saveHistory = query => {
             if( oldData === null ){
                 oldData = [];
             }
-            if(oldData.length >= 5){
-                oldData.shift();
-            }
             if(!oldData.some(data => data.name === query) && query !== undefined){
+                if(oldData.length >= 5){
+                    oldData.shift();
+                }
                 allData =  [...oldData, newData];
                 cache.writeData('history', allData) 
             }
