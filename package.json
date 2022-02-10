@@ -10,7 +10,7 @@
     "immutable": "^4.0.0-rc.12",
     "localforage": "^1.7.3",
     "moment": "^2.24.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-localforage": "^1.0.1",
